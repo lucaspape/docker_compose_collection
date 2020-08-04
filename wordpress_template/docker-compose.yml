@@ -1,0 +1,33 @@
+version: '2'
+
+services:
+  php-fpm:
+    build: php
+    volumes:
+      - ${WEB_ROOT}/html:/var/www/html
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+
+  web:
+    image: nginx
+    ports:
+      - 8080:80
+    links:
+      - php-fpm
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    volumes_from:
+      - php-fpm
+    restart: always
+
+  mariadb:
+    image: mariadb
+    restart: unless-stopped
+    volumes:
+      - ${WEB_ROOT}/mariadb:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=database
+      - MYSQL_USER=database
