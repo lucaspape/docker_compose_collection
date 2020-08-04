@@ -1,0 +1,42 @@
+version: '2'
+
+services:
+  nextcloud:
+    image: nextcloud:fpm
+    volumes:
+      - ${NEXTCLOUD_ROOT}/html:/var/www/html
+      - ${NEXTCLOUD_ROOT}/data:/srv/nextcloud/data
+      - ./php.ini:/usr/local/etc/php/php.ini:ro
+    restart: unless-stopped
+    depends_on:
+      - mariadb
+    environment:
+      - NEXTCLOUD_TRUSTED_DOMAINS='${NEXTCLOUD_FQDN}'
+      - NEXTCLOUD_DATA_DIR=/srv/nextcloud/data
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_HOST=mariadb
+
+  web:
+    image: nginx
+    ports:
+      - 8080:80
+    links:
+      - nextcloud
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+    volumes_from:
+      - nextcloud
+    restart: always
+
+  mariadb:
+    image: mariadb
+    restart: unless-stopped
+    volumes:
+      - ${NEXTCLOUD_ROOT}/mariadb:/var/lib/mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
+      - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+      - MYSQL_DATABASE=nextcloud
+      - MYSQL_USER=nextcloud
