@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  web:
+    image: nginx
+    ports:
+      - 8080:80
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ${WEB_ROOT}/html:/var/www/html
+    restart: always
