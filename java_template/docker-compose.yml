@@ -1,0 +1,12 @@
+version: '2'
+
+services:
+  minecraft:
+    image: openjdk:8-jdk
+    working_dir: /opt/java
+    command: java -jar CHANGEME.jar
+    ports:
+      - 25565:25565
+    volumes:
+      - ./minecraft:/opt/java
+    restart: always
