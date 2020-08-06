@@ -8,5 +8,5 @@ services:
     ports:
       - 25565:25565
     volumes:
-      - ./minecraft:/opt/java
+      - ./java:/opt/java
     restart: always
